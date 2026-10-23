@@ -1,0 +1,209 @@
+:root {
+    --bg-primary: #f8fafc;
+    --bg-card: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --border: #e2e8f0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1);
+    --radius: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+/* Header & Navegação */
+header {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+ul {
+    display: flex;
+    list-style: none;
+    gap: 1.5rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+nav a:hover, nav a.active {
+    color: var(--accent);
+    background: #eff6ff;
+}
+
+/* Submenu / Sub-bar */
+.sub-bar {
+    background: #f1f5f9;
+    padding: 0.75rem 2rem;
+    font-size: 0.9rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    border-top: 1px solid var(--border);
+}
+
+.sub-bar a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Container do SPA com animação de entrada */
+#app-content {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Grelha de Cards Responsiva */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Card Genérico */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Card Visitante com Foco/Hover e Ações */
+.card-visitante {
+    border-left: 4px solid var(--warning);
+}
+
+.card-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(2px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.card-visitante:hover .card-overlay {
+    opacity: 1;
+}
+
+.btn-action {
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.btn-action:hover { transform: scale(1.05); }
+.btn-primary { background: var(--accent); color: white; }
+.btn-success { background: var(--success); color: white; }
+
+/* Formulários */
+form fieldset {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    background: var(--bg-card);
+}
+
+form legend {
+    font-size: 1.25rem;
+    font-weight: 700;
+    padding: 0 0.5rem;
+    color: var(--accent);
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+input, select, textarea {
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    transition: border 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+}
+
+/* Tag Suave para Ativo */
+.tag-ativo {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Responsividade Avançada (Mobile e Tablet) */
+@media (max-width: 768px) {
+    nav { flex-direction: column; gap: 1rem; }
+    ul { flex-wrap: wrap; justify-content: center; }
+    .sub-bar { flex-direction: column; text-align: center; }
+}

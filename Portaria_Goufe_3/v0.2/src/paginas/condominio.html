@@ -1,0 +1,42 @@
+<section>
+    <h2>Gestão do Condomínio e Lotes</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+        
+        <div>
+            <fieldset style="background:white; padding:1.5rem; border-radius:var(--radius); border:1px solid var(--border);">
+                <legend style="font-weight:700; color:var(--accent);">Cadastrar Rua</legend>
+                <form onsubmit="UI.salvarRua(event)" autocomplete="off">
+                    <div class="form-group">
+                        <label>Nome da Rua:</label>
+                        <input type="text" id="rua_nome" required placeholder="Ex: Rua Bela Vista" autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn-action btn-primary">Salvar Rua</button>
+                </form>
+            </fieldset>
+
+            <fieldset style="background:white; padding:1.5rem; border-radius:var(--radius); border:1px solid var(--border); margin-top: 1.5rem;">
+                <legend style="font-weight:700; color:var(--accent);">Cadastrar Casa / Lote</legend>
+                <form onsubmit="UI.salvarCasa(event)" autocomplete="off">
+                    <div class="form-group">
+                        <label>Selecione a Rua:</label>
+                        <select id="casa_rua_id" required><option value="">A carregar ruas...</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Identificação da Casa (Ex: A-20):</label>
+                        <input type="text" id="casa_numero" required placeholder="Ex: A-20" autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn-action btn-primary">Salvar Casa na Rua</button>
+                </form>
+            </fieldset>
+        </div>
+
+        <!-- Mapa do Condomínio com a Tag de Imagem -->
+        <div style="background:white; padding:1.5rem; border-radius:var(--radius); border:1px solid var(--border);">
+            <h3 style="margin-bottom: 1rem; color: var(--accent);">Mapa do Condomínio</h3>
+            <div style="border: 2px solid var(--border); border-radius: 8px; height: 400px; display: flex; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden;">
+                <img src="src/img/mapa.png" alt="Mapa do Condomínio" style="width:100%; height:100%; object-fit:contain;" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\'><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2364748b\' font-size=\'16\'>Coloque a sua imagem em src/img/mapa.png</text></svg>';">
+            </div>
+        </div>
+
+    </div>
+</section>

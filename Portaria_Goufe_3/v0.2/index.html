@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Portaria de Condomínio</title>
+    <link rel="stylesheet" href="src/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <ul>
+                <li><a data-route="home" class="active">Home</a></li>
+                <li><a data-route="dashboard">Dashboard</a></li>
+                <li><a data-route="proprietarios">Proprietários</a></li>
+                <li><a data-route="moradores">Moradores</a></li>
+                <li><a data-route="visitantes">Visitantes</a></li>
+                <li><a data-route="condominio">Condomínio</a></li>
+            </ul>
+            <ul>
+                <li><a href="#">Sair</a></li>
+            </ul>
+        </nav>
+        <div class="sub-bar">
+            <span>Cancela Manual: <a onclick="UI.filtrarAcessos('CANCELA_MANUAL', 'pendente')">Pendentes</a> | <a onclick="UI.filtrarAcessos('CANCELA_MANUAL', 'concluido')">Concluídos</a></span>
+            <span>|</span>
+            <span>Portão Automático: <a onclick="UI.filtrarAcessos('PORTAO_AUTOMATICO', 'pendente')">Pendentes</a> | <a onclick="UI.filtrarAcessos('PORTAO_AUTOMATICO', 'concluido')">Concluídos</a></span>
+        </div>
+    </header>
+
+    <main id="app-content">
+        <!-- Conteúdo SPA -->
+    </main>
+
+    <script src="src/scripts/validation.js"></script>
+    <script src="src/scripts/db.js"></script>
+    <script src="src/scripts/ui.js"></script>
+    <script src="src/scripts/app.js"></script>
+</body>
+</html>

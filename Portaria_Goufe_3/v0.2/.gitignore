@@ -1,0 +1,39 @@
+# ==========================================
+# Configurações do Banco de Dados / Sensíveis
+# ==========================================
+# Impede a exposição de senhas e credenciais do MySQL
+src/bancoDeDados/conexao.php
+
+# ==========================================
+# Ficheiros do Sistema Operativo e IDEs
+# ==========================================
+# Configurações do VS Code / Editores
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ficheiros temporários do Windows e macOS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+.DS_Store?
+._*
+
+# ==========================================
+# Logs e Ficheiros Temporários PHP / XAMPP
+# ==========================================
+*.log
+error_log
+php_error.log
+
+# ==========================================
+# Uploads / Mídia Dinâmica (Opcional)
+# ==========================================
+# Se no futuro permitires upload de imagens do condomínio via sistema,
+# ignora a pasta de uploads mantendo apenas um .gitkeep nela:
+# src/uploads/*
+# !src/uploads/.gitkeep

@@ -1,0 +1,103 @@
+<section>
+    <div class="sub-spa-nav"
+        style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+        <button class="btn-action btn-primary active" data-target="novo-cadastro">Novo Cadastro</button>
+        <button class="btn-action" data-target="visualizar-cadastrados"
+            style="background:#e2e8f0; color:var(--text-primary);" onclick="UI.carregarListaProprietarios()">Visualizar
+            Cadastrados</button>
+    </div>
+
+    <div id="novo-cadastro" class="sub-spa-content">
+        <form onsubmit="UI.salvarProprietario(event)" autocomplete="off">
+            <fieldset>
+                <legend>Cadastro de Proprietários</legend>
+
+                <div class="form-group">
+                    <label>Nome Completo:</label>
+                    <input type="text" id="p_nome" required placeholder="Ex: João da Silva" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Documento (CPF / RG):</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <select id="p_tipo_doc" style="width: 120px;">
+                            <option value="CPF">CPF</option>
+                            <option value="RG">RG</option>
+                        </select>
+                        <input type="text" id="p_numero_doc" style="flex:1;" required placeholder="000.000.000-00"
+                            autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Data de Nascimento:</label>
+                    <input type="date" id="p_data_nascimento" required autocomplete="off">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Rua:</label>
+                        <select id="p_rua" required>
+                            <option value="">A carregar ruas...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Casa / Lote:</label>
+                        <select id="p_casa" required>
+                            <option value="">Selecione primeiro a Rua...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h4 style="margin: 1.5rem 0 0.75rem 0; color: var(--accent);">Moradores / Dependentes da Casa</h4>
+                <div id="container-moradores-dep">
+                    <div class="morador-dep-item" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center;">
+                        <input type="text" class="md_nome" placeholder="Nome Completo" autocomplete="off">
+                        <select class="md_parentesco">
+                            <option value="Dono">Dono</option>
+                            <option value="Conjuge">Cônjuge</option>
+                            <option value="Filho(a)">Filho(a)</option>
+                            <option value="Parente">Parente</option>
+                            <option value="Inquilino">Inquilino</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                        <select class="md_tipo_doc">
+                            <option value="CPF">CPF</option>
+                            <option value="RG">RG</option>
+                        </select>
+                        <input type="text" class="md_num_doc" placeholder="Documento" autocomplete="off">
+                        <input type="date" class="md_data_nasc">
+                        <button type="button" onclick="this.closest('.morador-dep-item').remove()" class="btn-action" style="background:#fee2e2; color:#991b1b; padding: 0.5rem 0.75rem; border:none; cursor:pointer;" title="Remover">🗑️</button>
+                    </div>
+                </div>
+                <button type="button" onclick="UI.adicionarCampoMoradorDep()" class="btn-action" style="background:#e2e8f0; color:var(--text-primary); margin-top: 0.5rem;">+ Adicionar Outro Morador/Dependente</button>
+
+                <h4 style="margin: 1.5rem 0 0.75rem 0; color: var(--accent);">Veículos do Proprietário</h4>
+                <div id="container-veiculos">
+                    <div class="veiculo-item"
+                        style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <input type="text" class="v_modelo" placeholder="Modelo (Ex: Siena)" autocomplete="off">
+                        <input type="text" class="v_cor" placeholder="Cor" autocomplete="off">
+                        <select class="v_tipo_placa">
+                            <option value="ANTIGA">Antiga (ABC-1234)</option>
+                            <option value="MERCOSUL">Mercosul (ABC1A23)</option>
+                        </select>
+                        <input type="text" class="v_placa" placeholder="Placa"
+                            oninput="Validation.aplicarMascaraPlaca(this)" autocomplete="off">
+                    </div>
+                </div>
+                <button type="button" onclick="UI.adicionarCampoVeiculo()" class="btn-action"
+                    style="background:#e2e8f0; color:var(--text-primary); margin-top: 0.5rem;">+ Adicionar Outro
+                    Veículo</button>
+
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="btn-action btn-primary" style="padding: 0.75rem 1.5rem;">Salvar
+                        Cadastro</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+    <div id="visualizar-cadastrados" class="sub-spa-content" style="display: none;">
+        <h3>Proprietários Registados</h3>
+        <div id="container-grid-proprietarios" class="cards-grid" style="margin-top: 1rem;"></div>
+    </div>
+</section>
