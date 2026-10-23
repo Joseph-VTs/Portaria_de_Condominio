@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portaria G3 - Beta v0.1</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="#">Proprietários</a></li>
+                <li><a href="#">Moradores</a></li>
+                <li><a href="#">Visitantes</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <form action="" method="POST" id="meuForm">
+            <fieldset>
+                <legend>Cadastro de Proprietários</legend>
+                <div>
+                    <label for="name">Nome:</label>
+                    <input type="text" name="name" id="name">
+                </div>
+
+                <!-- Data de Nascimento -->
+                <div>
+                    <label for="dataNasc">Data de Nascimento:</label>
+                    <input type="date" name="dataNasc" id="dataNasc">
+                </div>
+
+                <!-- Telefone -->
+                <div>
+                    <label for="cell">Telefone:</label>
+                    <input type="tel" name="cell" id="cell">
+                </div>
+
+                <!-- Documento Único -->
+                <div>
+                    <label for="doc">Documento:</label>
+                    <input type="text" name="doc" id="doc">
+                </div>
+
+                <!-- Escolha do Sexo -->
+                <div>
+                    <div>
+                        <label for="sexoMasc">Masculino:</label>
+                        <input type="checkbox" name="sexoMasc" id="sexoMasc">
+                    </div>
+                    <div>
+                        <label for="sexoFem">Feminino:</label>
+                        <input type="checkbox" name="sexoFem" id="sexoFem">
+                    </div>
+                </div>
+
+                <!-- Identificação da Localização -->
+                <div>
+                    <label for="nCasa">Rua:</label>
+                    <select name="nCasa" id="nCasa">
+                        <!-- RUA A -->
+                        <optgroup label="A">
+                            <option value="a10">10</option>
+                            <option value="a20">20</option>
+                            <option value="a30">30</option>
+                            <option value="a40">40</option>
+                            <option value="a50">50</option>
+                        </optgroup>
+
+                        <!-- RUA B -->
+                        <optgroup label="B">
+                            <option value="b10">10</option>
+                            <option value="b20">20</option>
+                            <option value="b30">30</option>
+                            <option value="b40">40</option>
+                            <option value="b50">50</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div>
+                    <button type="submit">Salvar</button>
+                    <button type="reset">Resetar</button>
+                </div>
+            </fieldset>
+        </form>
+    </main>
+
+    <script src="../scripts/script.js"></script>
+</body>
+</html>

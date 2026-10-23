@@ -1,0 +1,21 @@
+[
+  {
+    "name": "Teste de Teste",
+    "dataNasc": "2026-10-01",
+    "cell": "51 9.1234-1234",
+    "doc": "123.123.123-00",
+    "sexoMasc": "on",
+    "nCasa": "a10",
+    "id": 1792700602677
+  },
+  {
+    "name": "Teste de Teste",
+    "dataNasc": "2026-10-24",
+    "cell": "51 9.1234-1234",
+    "doc": "123.123.123-00",
+    "sexoMasc": "on",
+    "sexoFem": "on",
+    "nCasa": "a10",
+    "id": 1792704361015
+  }
+]
