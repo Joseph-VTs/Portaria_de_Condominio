@@ -1,8 +1,11 @@
 const UI = {
+    dadosAcessosCache: [],
+
     async initPageScript(route) {
         switch (route) {
             case 'home':
                 await this.carregarAcessosHome('todos');
+                this.configurarPesquisaHome();
                 break;
             case 'dashboard':
                 this.initDashboardCharts();
@@ -22,7 +25,7 @@ const UI = {
                 break;
             case 'visitantes':
                 this.initSubSpaTabs();
-                await this.carregarSelectDestinos();
+                await this.configurarAutocompleteDestinos();
                 this.definirDataHoraAtualVisitante();
                 break;
             case 'condominio':
@@ -47,12 +50,184 @@ const UI = {
         });
     },
 
+    formatarDataHora(dataHoraStr) {
+        if (!dataHoraStr) return '';
+        const [data, hora] = dataHoraStr.split(' ');
+        if (!data) return dataHoraStr;
+        const dataFormatada = data.split('-').reverse().join('/');
+        return hora ? `${dataFormatada} ${hora}` : dataFormatada;
+    },
+
     definirDataHoraAtualVisitante() {
         const input = document.getElementById('v_data_hora');
         if (!input) return;
         const now = new Date();
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         input.value = now.toISOString().slice(0, 16);
+    },
+
+    configurarPesquisaHome() {
+        const inputPesquisa = document.getElementById('input-pesquisa-home');
+        if (!inputPesquisa) return;
+
+        inputPesquisa.addEventListener('input', (e) => {
+            const termo = e.target.value.toLowerCase().trim();
+            this.renderizarCardsFiltrados(termo);
+        });
+    },
+
+    async carregarAcessosHome(statusFiltro) {
+        let url = 'src/bancoDeDados/api_acessos.php?hoje=1';
+        if (statusFiltro && statusFiltro !== 'todos') url += `&status=${statusFiltro}`;
+
+        try {
+            const res = await fetch(url);
+            this.dadosAcessosCache = await res.json();
+            this.renderizarCardsFiltrados('');
+        } catch (e) {
+            console.error("Erro ao carregar acessos da Home:", e);
+        }
+    },
+
+    async filtrarAcessos(tipoLiberacao, status) {
+        let url = 'src/bancoDeDados/api_acessos.php?hoje=1';
+        let params = [];
+        if (status && status !== 'todos') params.push(`status=${status}`);
+        if (tipoLiberacao) params.push(`liberacao=${tipoLiberacao}`);
+        if (params.length > 0) url += '&' + params.join('&');
+
+        const res = await fetch(url);
+        this.dadosAcessosCache = await res.json();
+        this.renderizarCardsFiltrados('');
+    },
+
+    renderizarCardsFiltrados(termo) {
+        const container = document.getElementById('home-cards-container');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        const listaFiltrada = this.dadosAcessosCache.filter(item => {
+            const rua = (item.rua_destino || '').toLowerCase();
+            const casa = (item.casa_destino || '').toLowerCase();
+            const obs = (item.observacao || '').toLowerCase();
+            const placa = (item.v_placa || '').toLowerCase();
+            const liberacao = (item.liberacao || '').toLowerCase();
+            return rua.includes(termo) || casa.includes(termo) || obs.includes(termo) || placa.includes(termo) || liberacao.includes(termo);
+        });
+
+        if (listaFiltrada.length === 0) {
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 3rem; background: #fff; border-radius: 12px; border: 1px solid var(--border);">🔍 Nenhum registo encontrado.</div>`;
+            return;
+        }
+
+        listaFiltrada.forEach(item => {
+            const isPendente = item.status_visitante === 'PENDENTE';
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div>
+                    <div class="card-header">
+                        <span class="badge-tipo">${item.liberacao}</span>
+                        <span class="badge ${isPendente ? 'badge-pendente' : 'badge-concluido'}">${item.status_visitante}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-info">🕒 <span>Entrou: ${this.formatarDataHora(item.data_hora_entrada)}</span></div>
+                        ${item.data_hora_saida ? `<div class="card-info" style="color: var(--success);">🕒 <span>Saiu: ${this.formatarDataHora(item.data_hora_saida)}</span></div>` : ''}
+                        
+                        <div class="card-title">📍 ${item.rua_destino}, ${item.casa_destino}</div>
+                        ${item.v_placa ? `<div class="card-info">🚗 <strong>Veículo:</strong> ${item.veiculo_modelo || ''} (${item.v_placa})</div>` : ''}
+                        ${item.observacao ? `<div class="card-obs">"${item.observacao}"</div>` : ''}
+                    </div>
+                </div>
+                
+                ${isPendente ? `
+                    <div class="card-footer">
+                        <button class="btn-action btn-success" onclick="UI.marcarSaida(${item.id})">
+                            <span>✅</span> Marcar Saída
+                        </button>
+                    </div>
+                ` : ''}
+            `;
+            container.appendChild(card);
+        });
+    },
+
+    async marcarSaida(id) {
+        const res = await fetch('src/bancoDeDados/api_acessos.php', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if (data.sucesso) this.carregarAcessosHome('todos');
+    },
+
+    async configurarAutocompleteDestinos() {
+        const input = document.getElementById('v_destino_input');
+        const hiddenInput = document.getElementById('select-destino-morador');
+        const containerResultados = document.getElementById('v_destino_results');
+        if (!input || !containerResultados) return;
+
+        try {
+            const res = await fetch('src/bancoDeDados/api_destinos.php');
+            const data = await res.json();
+
+            let listaOpcoes = [];
+            if (data.proprietarios) {
+                data.proprietarios.forEach(p => {
+                    listaOpcoes.push({
+                        texto: `Proprietário: ${p.nome} - Casa ${p.casa} (${p.rua})`,
+                        valor: `Proprietário: ${p.nome} (Casa ${p.casa})`
+                    });
+                });
+            }
+            if (data.moradores) {
+                data.moradores.forEach(m => {
+                    listaOpcoes.push({
+                        texto: `Morador: ${m.nome} (${m.parentesco || 'Morador'}) - Casa ${m.casa} (${m.rua})`,
+                        valor: `Morador: ${m.nome} (${m.parentesco || 'Morador'}) - Casa ${m.casa}`
+                    });
+                });
+            }
+
+            input.addEventListener('input', (e) => {
+                const val = e.target.value.toLowerCase().trim();
+                containerResultados.innerHTML = '';
+
+                if (val.length < 1) {
+                    containerResultados.style.display = 'none';
+                    return;
+                }
+
+                const filtrados = listaOpcoes.filter(o => o.texto.toLowerCase().includes(val));
+
+                if (filtrados.length > 0) {
+                    filtrados.forEach(opt => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        div.textContent = opt.texto;
+                        div.onclick = () => {
+                            input.value = opt.texto;
+                            if (hiddenInput) hiddenInput.value = opt.valor;
+                            containerResultados.style.display = 'none';
+                        };
+                        containerResultados.appendChild(div);
+                    });
+                    containerResultados.style.display = 'block';
+                } else {
+                    containerResultados.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !containerResultados.contains(e.target)) {
+                    containerResultados.style.display = 'none';
+                }
+            });
+        } catch (e) {
+            console.error("Erro ao carregar destinos para autocomplete:", e);
+        }
     },
 
     async buscarAutoPreenchimentoPlaca(placa) {
@@ -70,7 +245,11 @@ const UI = {
                 if (dados.modelo) document.getElementById('v_modelo').value = dados.modelo;
                 if (dados.cor) document.getElementById('v_cor').value = dados.cor;
                 if (dados.tipo_placa) document.getElementById('v_tipo_placa').value = dados.tipo_placa;
-                if (dados.casa_destino) document.getElementById('select-destino-morador').value = dados.casa_destino;
+                if (dados.casa_destino) {
+                    document.getElementById('select-destino-morador').value = dados.casa_destino;
+                    const inputDestino = document.getElementById('v_destino_input');
+                    if (inputDestino) inputDestino.value = dados.casa_destino;
+                }
                 if (dados.observacao) document.getElementById('v_observacao').value = dados.observacao;
             }
         } catch (e) {
@@ -265,7 +444,8 @@ const UI = {
             const respJson = await res.json();
             alert(respJson.mensagem || respJson.erro || 'Proprietário cadastrado com sucesso!');
             if (respJson.sucesso) {
-                event.target.reset();
+                const formEl = event.target.closest('form') || document.querySelector('form');
+                if (formEl) formEl.reset();
                 this.carregarListaProprietarios();
             }
         } catch (e) {
@@ -320,7 +500,8 @@ const UI = {
             const respJson = await res.json();
             alert(respJson.mensagem || respJson.erro || 'Morador cadastrado com sucesso!');
             if (respJson.sucesso) {
-                event.target.reset();
+                const formEl = event.target.closest('form') || document.querySelector('form');
+                if (formEl) formEl.reset();
                 selectRua.disabled = false;
                 selectCasa.disabled = false;
                 this.carregarListaMoradores();
@@ -370,7 +551,6 @@ const UI = {
 
             alert(respJson.mensagem || 'Operação realizada com sucesso!');
             if (respJson.sucesso) {
-                // Emendatio: Invenire formam proximam ut methodus reset() recte vocetur
                 const formEl = event.target.closest('form') || document.querySelector('form');
                 if (formEl) formEl.reset();
 
@@ -400,9 +580,10 @@ const UI = {
         lista.forEach(v => {
             container.innerHTML += `
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between;"><h4 style="margin:0;">${v.nome}</h4><span class="tag-ativo" style="background:#d1fae5; color:#065f46;">Frequente</span></div>
+                    <div style="display: flex; justify-content: space-between;"><h4 style="margin:0;">${v.nome}</h4><span class="badge badge-concluido">Frequente</span></div>
                     <p style="font-size:0.9rem; color:var(--text-secondary); margin-top:0.5rem;">Doc: ${v.tipo_doc} - ${v.numero_doc}</p>
                     ${v.data_nascimento ? `<p style="font-size:0.85rem; color:var(--text-secondary);">Nasc: ${v.data_nascimento.split('-').reverse().join('/')}</p>` : ''}
+                    <button onclick="UI.abrirTimeline('VISITANTE', ${v.id}, '${v.nome}')" class="btn-action" style="margin-top:0.75rem; width:100%; background:#e2e8f0; color:var(--text-primary); font-size:0.85rem; padding:0.4rem;">📊 Ver Histórico / Timeline</button>
                 </div>
             `;
         });
@@ -446,178 +627,6 @@ const UI = {
         select.addEventListener('change', window._proprietarioChangeHandler);
     },
 
-    async carregarSelectDestinos() {
-        const select = document.getElementById('select-destino-morador');
-        if (!select) return;
-
-        const res = await fetch('src/bancoDeDados/api_destinos.php');
-        const data = await res.json();
-
-        select.innerHTML = '<option value="">Selecione o destino (Proprietário ou Morador)...</option>';
-
-        if (data.ruas && data.ruas.length > 0) {
-            data.ruas.forEach(r => {
-                let optgroup = document.createElement('optgroup');
-                optgroup.label = `📍 ${r.nome}`;
-
-                let temMembros = false;
-
-                if (data.proprietarios) {
-                    data.proprietarios.filter(p => p.rua === r.nome).forEach(p => {
-                        temMembros = true;
-                        let option = document.createElement('option');
-                        option.value = `Proprietário: ${p.nome} (Casa ${p.casa})`;
-                        option.textContent = `Proprietário: ${p.nome} - Casa ${p.casa}`;
-                        optgroup.appendChild(option);
-                    });
-                }
-
-                if (data.moradores) {
-                    data.moradores.filter(m => m.rua === r.nome).forEach(m => {
-                        temMembros = true;
-                        let option = document.createElement('option');
-                        option.value = `Morador: ${m.nome} (${m.parentesco || 'Morador'}) - Casa ${m.casa}`;
-                        option.textContent = `Morador: ${m.nome} (${m.parentesco || 'Morador'}) - Casa ${m.casa}`;
-                        optgroup.appendChild(option);
-                    });
-                }
-
-                if (!temMembros) {
-                    let option = document.createElement('option');
-                    option.disabled = true;
-                    option.textContent = `Nenhum registo nesta rua`;
-                    optgroup.appendChild(option);
-                }
-
-                select.appendChild(optgroup);
-            });
-        }
-    },
-
-    async carregarAcessosHome(statusFiltro) {
-        await this.filtrarAcessos(null, statusFiltro);
-    },
-
-    async renderHomeCards(status) {
-        let filtroApi = 'todos';
-        if (status === 'pendente') filtroApi = 'pendente';
-        if (status === 'concluido') filtroApi = 'concluido';
-        await this.carregarAcessosHome(filtroApi);
-    },
-
-    async filtrarAcessos(tipoLiberacao, status) {
-        const container = document.getElementById('home-cards-container');
-        if (!container) return;
-
-        let url = 'src/bancoDeDados/api_acessos.php?hoje=1';
-        let params = [];
-        if (status && status !== 'todos') params.push(`status=${status}`);
-        if (tipoLiberacao) params.push(`liberacao=${tipoLiberacao}`);
-        if (params.length > 0) url += '&' + params.join('&');
-
-        const res = await fetch(url);
-        const acessos = await res.json();
-
-        container.innerHTML = '';
-        if (acessos.length === 0) {
-            container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">Nenhum registo encontrado para o dia de hoje.</p>`;
-            return;
-        }
-
-        acessos.forEach(item => {
-            const card = document.createElement('div');
-            card.className = `card ${item.status_visitante === 'PENDENTE' ? 'card-visitante' : ''}`;
-            card.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                    <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent);">LIBERAÇÃO: ${item.liberacao}</span>
-                    <span class="tag-ativo" style="background: ${item.status_visitante === 'PENDENTE' ? '#fef3c7' : '#d1fae5'}; color: ${item.status_visitante === 'PENDENTE' ? '#92400e' : '#065f46'};">${item.status_visitante}</span>
-                </div>
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">🕒 Entrou: ${item.data_hora_entrada}</p>
-                ${item.data_hora_saida ? `<p style="font-size: 0.85rem; color: var(--success); margin-bottom: 0.5rem;">🕒 Saiu: ${item.data_hora_saida}</p>` : ''}
-                
-                <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Registo de Acesso</h3>
-                <p style="font-size: 0.9rem; margin-top: 0.5rem;">📍 <strong>Destino:</strong> ${item.rua_destino}, ${item.casa_destino}</p>
-                ${item.observacao ? `<p style="font-size: 0.85rem; font-style: italic; color: var(--text-secondary); margin-top: 0.5rem;">Obs: "${item.observacao}"</p>` : ''}
-                
-                ${item.status_visitante === 'PENDENTE' ? `
-                    <div class="card-overlay">
-                        <button class="btn-action btn-success" onclick="UI.marcarSaida(${item.id})">Marcar Saída</button>
-                    </div>
-                ` : ''}
-            `;
-            container.appendChild(card);
-        });
-    },
-
-    async marcarSaida(id) {
-        const res = await fetch('src/bancoDeDados/api_acessos.php', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
-        });
-        const data = await res.json();
-        if (data.sucesso) this.carregarAcessosHome('todos');
-    },
-
-    async carregarCondominio() {
-        const select = document.getElementById('casa_rua_id');
-        if (!select) return;
-        const res = await fetch('src/bancoDeDados/api_condominio.php');
-        const data = await res.json();
-        select.innerHTML = '<option value="">Selecione a Rua...</option>';
-        if (data.ruas) {
-            data.ruas.forEach(r => {
-                select.innerHTML += `<option value="${r.id}">${r.nome}</option>`;
-            });
-        }
-    },
-
-    async salvarRua(event) {
-        event.preventDefault();
-        const nome = document.getElementById('rua_nome').value;
-        try {
-            const res = await fetch('src/bancoDeDados/api_condominio.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ acao: 'salvar_rua', nome })
-            });
-            const resp = await res.json();
-
-            alert(resp.mensagem || resp.erro || 'Rua salva com sucesso!');
-
-            if (resp.sucesso) {
-                event.target.reset();
-                this.carregarCondominio();
-            }
-        } catch (e) {
-            console.error("Erro ao salvar rua:", e);
-            alert('Erro de comunicação com o servidor.');
-        }
-    },
-
-    async salvarCasa(event) {
-        event.preventDefault();
-        const rua_id = document.getElementById('casa_rua_id').value;
-        const numero_casa = document.getElementById('casa_numero').value;
-        try {
-            const res = await fetch('src/bancoDeDados/api_condominio.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ acao: 'salvar_casa', rua_id, numero_casa })
-            });
-            const resp = await res.json();
-
-            alert(resp.mensagem || resp.erro || 'Casa salva com sucesso!');
-
-            if (resp.sucesso) {
-                event.target.reset();
-            }
-        } catch (e) {
-            console.error("Erro ao salvar casa:", e);
-            alert('Erro de comunicação com o servidor.');
-        }
-    },
-
     async carregarListaProprietarios() {
         const container = document.getElementById('container-grid-proprietarios');
         if (!container) return;
@@ -627,10 +636,11 @@ const UI = {
         lista.forEach(p => {
             container.innerHTML += `
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between;"><h4 style="margin:0;">${p.nome}</h4><span class="tag-ativo">Ativo</span></div>
+                    <div style="display: flex; justify-content: space-between;"><h4 style="margin:0;">${p.nome}</h4><span class="badge badge-concluido">Ativo</span></div>
                     <p style="font-size:0.9rem; color:var(--text-secondary); margin-top:0.5rem;">${p.rua}, Casa ${p.casa}</p>
                     <p style="font-size:0.9rem; margin-top:0.25rem;">Doc: ${p.numero_doc}</p>
                     <p style="font-size:0.85rem; color:var(--text-secondary);">Nasc: ${p.data_nascimento ? p.data_nascimento.split('-').reverse().join('/') : '-'}</p>
+                    <button onclick="UI.abrirTimeline('PROPRIETARIO', ${p.id}, '${p.nome}')" class="btn-action" style="margin-top:0.75rem; width:100%; background:#e2e8f0; color:var(--text-primary); font-size:0.85rem; padding:0.4rem;">📊 Ver Histórico / Timeline</button>
                 </div>
             `;
         });
@@ -645,10 +655,11 @@ const UI = {
         lista.forEach(m => {
             container.innerHTML += `
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between;"><h4 style="margin:0;">${m.nome}</h4><span class="tag-ativo">${m.parentesco || 'Morador'}</span></div>
+                    <div style="display: flex; justify-content: space-between;"><h4 style="margin:0;">${m.nome}</h4><span class="badge badge-concluido">${m.parentesco || 'Morador'}</span></div>
                     <p style="font-size:0.9rem; color:var(--text-secondary); margin-top:0.5rem;">Responsável: ${m.proprietario_nome || 'Independente'} (${m.rua}, Casa ${m.casa})</p>
                     <p style="font-size:0.9rem; margin-top:0.25rem;">Doc: ${m.numero_doc}</p>
                     <p style="font-size:0.85rem; color:var(--text-secondary);">Nasc: ${m.data_nascimento ? m.data_nascimento.split('-').reverse().join('/') : '-'}</p>
+                    <button onclick="UI.abrirTimeline('MORADOR', ${m.id}, '${m.nome}')" class="btn-action" style="margin-top:0.75rem; width:100%; background:#e2e8f0; color:var(--text-primary); font-size:0.85rem; padding:0.4rem;">📊 Ver Histórico / Timeline</button>
                 </div>
             `;
         });
@@ -677,5 +688,59 @@ const UI = {
                     options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
                 });
             });
+    },
+
+    async abrirTimeline(tipo, id, nomePessoa) {
+        const modal = document.getElementById('modal-timeline');
+        const titulo = document.getElementById('modal-timeline-titulo');
+        const conteudo = document.getElementById('modal-timeline-conteudo');
+
+        if (!modal) return;
+
+        titulo.textContent = `Timeline de Acessos: ${nomePessoa}`;
+        conteudo.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">A carregar histórico...</p>';
+        modal.style.display = 'flex';
+
+        try {
+            const res = await fetch(`src/bancoDeDados/api_historico.php?tipo=${tipo}&id=${id}`);
+            const historico = await res.json();
+
+            conteudo.innerHTML = '';
+
+            if (!historico || historico.length === 0) {
+                conteudo.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhum registo de acesso encontrado para esta pessoa.</p>';
+                return;
+            }
+
+            let html = '<div style="display: flex; flex-direction: column; gap: 0.75rem;">';
+            historico.forEach(item => {
+                const isPendente = item.status_visitante === 'PENDENTE';
+
+                html += `
+                    <div style="border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem; background: #ffffff; box-shadow: var(--shadow);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                            <span class="badge-tipo">${item.liberacao}</span>
+                            <span class="badge ${isPendente ? 'badge-pendente' : 'badge-concluido'}">${item.status_visitante}</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.2rem 0;">🕒 Entrou: ${this.formatarDataHora(item.data_hora_entrada)}</p>
+                        ${item.data_hora_saida ? `<p style="font-size: 0.85rem; color: var(--success); margin: 0.2rem 0;">🕒 Saiu: ${this.formatarDataHora(item.data_hora_saida)}</p>` : ''}
+                        <p style="font-size: 0.85rem; margin: 0.3rem 0 0 0;">📍 <strong>Destino:</strong> ${item.rua_destino || 'Principal'}, ${item.casa_destino || 'Geral'}</p>
+                        ${item.v_placa ? `<p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0.2rem 0;">🚗 Veículo: ${item.modelo || ''} (${item.v_placa})</p>` : ''}
+                        ${item.observacao ? `<p style="font-size: 0.8rem; font-style: italic; color: var(--text-secondary); margin-top: 0.3rem;">Obs: "${item.observacao}"</p>` : ''}
+                    </div>
+                `;
+            });
+            html += '</div>';
+            conteudo.innerHTML = html;
+
+        } catch (e) {
+            console.error("Erro ao carregar histórico:", e);
+            conteudo.innerHTML = '<p style="text-align: center; color: #dc2626; padding: 2rem;">Erro ao carregar o histórico de acessos.</p>';
+        }
+    },
+
+    fecharModalTimeline() {
+        const modal = document.getElementById('modal-timeline');
+        if (modal) modal.style.display = 'none';
     }
 };

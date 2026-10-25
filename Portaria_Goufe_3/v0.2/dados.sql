@@ -1,0 +1,221 @@
+-- Desativar temporariamente verificações de chave estrangeira para garantir inserção limpa
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- 1. Inserir Ruas e Casas de Exemplo (caso ainda não tenha)
+INSERT IGNORE INTO ruas (id, nome) VALUES 
+(1, 'Rua das Flores'),
+(2, 'Avenida Central'),
+(3, 'Rua do Sol');
+
+INSERT IGNORE INTO casas (rua_id, numero_casa) VALUES 
+(1, '10'), (1, '12'), (1, '14'), (1, '16'), (1, '18'),
+(2, '101'), (2, '102'), (2, '103'), (2, '104'), (2, '105'),
+(3, '201'), (3, '202'), (3, '203'), (3, '204'), (3, '205');
+
+-- 2. Inserir Proprietários (48 registos)
+INSERT INTO proprietarios (id, nome, tipo_doc, numero_doc, data_nascimento, rua, casa, ativo) VALUES
+(1, 'Carlos Alberto Silva', 'CPF', '10110110101', '1975-04-12', 'Rua das Flores', '10', 1),
+(2, 'Ana Paula Souza', 'CPF', '10210210202', '1980-08-22', 'Rua das Flores', '12', 1),
+(3, 'Marcos Vinicius Rocha', 'CPF', '10310310303', '1968-12-05', 'Rua das Flores', '14', 1),
+(4, 'Juliana Mendes Farias', 'CPF', '10410410404', '1990-03-19', 'Rua das Flores', '16', 1),
+(5, 'Roberto Carlos Leite', 'CPF', '10510510505', '1982-07-30', 'Rua das Flores', '18', 1),
+(6, 'Fernanda Lima e Silva', 'CPF', '10610610606', '1988-11-14', 'Avenida Central', '101', 1),
+(7, 'Lucas Gabriel Nogueira', 'CPF', '10710710707', '1979-05-25', 'Avenida Central', '102', 1),
+(8, 'Camila Pitanga Duarte', 'CPF', '10810810808', '1992-09-03', 'Avenida Central', '103', 1),
+(9, 'Bruno Gagliasso Ramos', 'CPF', '10910910909', '1984-01-18', 'Avenida Central', '104', 1),
+(10, 'Tatiana Pais Landim', 'CPF', '11011011010', '1976-10-27', 'Avenida Central', '105', 1),
+(11, 'Eduardo Costa e Silva', 'CPF', '11111111111', '1985-06-11', 'Rua do Sol', '201', 1),
+(12, 'Patrícia Poeta Silveira', 'CPF', '11211211212', '1991-02-14', 'Rua do Sol', '202', 1),
+(13, 'Renato Aragão Diniz', 'CPF', '11311311313', '1960-01-13', 'Rua do Sol', '203', 1),
+(14, 'Eliane Giardini Medeiros', 'CPF', '11411411414', '1972-08-09', 'Rua do Sol', '204', 1),
+(15, 'Marcelo Serrado Antunes', 'CPF', '11511511515', '1978-04-21', 'Rua do Sol', '205', 1),
+(16, 'Vanessa Giácomo Pires', 'CPF', '11611611616', '1983-11-29', 'Rua das Flores', '10', 1),
+(17, 'Alexandre Nero Borges', 'CPF', '11711711717', '1970-03-08', 'Rua das Flores', '12', 1),
+(18, 'Débora Falabella Rocha', 'CPF', '11811811818', '1979-07-16', 'Rua das Flores', '14', 1),
+(19, 'Murilo Benício Ribeiro', 'CPF', '11911911919', '1971-07-13', 'Rua das Flores', '16', 1),
+(20, 'Adriana Esteves Souza', 'CPF', '12012012020', '1969-12-15', 'Rua das Flores', '18', 1),
+(21, 'Vladimir Brichta Santos', 'CPF', '12112112121', '1976-03-22', 'Avenida Central', '101', 1),
+(22, 'Claudia Abreu Lima', 'CPF', '12212212222', '1970-10-12', 'Avenida Central', '102', 1),
+(23, 'Marcos Palmeira Cavalcanti', 'CPF', '12312312323', '1963-08-19', 'Avenida Central', '103', 1),
+(24, 'Letícia Colin Pires', 'CPF', '12412412424', '1989-12-30', 'Avenida Central', '104', 1),
+(25, 'Selton Mello Farias', 'CPF', '12512512525', '1972-12-30', 'Avenida Central', '105', 1),
+(26, 'Sophie Charlotte Silva', 'CPF', '12612612626', '1989-04-29', 'Rua do Sol', '201', 1),
+(27, 'Daniel de Oliveira Ramos', 'CPF', '12712712727', '1978-06-19', 'Rua do Sol', '202', 1),
+(28, 'Nathalia Dill Medeiros', 'CPF', '12812812828', '1986-03-24', 'Rua do Sol', '203', 1),
+(29, 'Cauã Reymond Marques', 'CPF', '12912912929', '1980-05-20', 'Rua do Sol', '204', 1),
+(30, 'Paolla Oliveira Guimarães', 'CPF', '13013013030', '1982-04-14', 'Rua do Sol', '205', 1),
+(31, 'Rodrigo Lombardi Duarte', 'CPF', '13113113131', '1976-10-15', 'Rua das Flores', '10', 1),
+(32, 'Alinne Moraes Ribeiro', 'CPF', '13213213232', '1982-12-22', 'Rua das Flores', '12', 1),
+(33, 'Malvino Salvador Costa', 'CPF', '13313313333', '1976-01-31', 'Rua das Flores', '14', 1),
+(34, 'Cleo Pires de Morais', 'CPF', '13413413434', '1982-10-02', 'Rua das Flores', '16', 1),
+(35, 'Thiago Lacerda Antunes', 'CPF', '13513513535', '1978-01-19', 'Rua das Flores', '18', 1),
+(36, 'Grazi Massafera Freitas', 'CPF', '13613613636', '1982-06-28', 'Avenida Central', '101', 1),
+(37, 'Reynaldo Gianecchini Junior', 'CPF', '13713713737', '1972-11-12', 'Avenida Central', '102', 1),
+(38, 'Giovanna Antonelli Prado', 'CPF', '13813813838', '1976-03-18', 'Avenida Central', '103', 1),
+(39, 'Domingos Montagner Neto', 'CPF', '13913913939', '1962-02-26', 'Avenida Central', '104', 1),
+(40, 'Camila Morgado Vieira', 'CPF', '14014014040', '1975-04-12', 'Avenida Central', '105', 1),
+(41, 'Lázaro Ramos Oliveira', 'CPF', '14114114141', '1978-11-01', 'Rua do Sol', '201', 1),
+(42, 'Taís Araújo Silva', 'CPF', '14214214242', '1978-11-25', 'Rua do Sol', '202', 1),
+(43, 'Marcos Caruso Mendonça', 'CPF', '14314314343', '1952-02-22', 'Rua do Sol', '203', 1),
+(44, 'Elizabeth Savalla Rocha', 'CPF', '14414414444', '1954-11-23', 'Rua do Sol', '204', 1),
+(45, 'Mateus Solano Paulo', 'CPF', '14514514545', '1981-03-22', 'Rua do Sol', '205', 1),
+(46, 'Pitanga Duarte Lima', 'CPF', '14614614646', '1985-07-09', 'Rua das Flores', '10', 1),
+(47, 'Sérgio Guizé Nogueira', 'CPF', '14714714747', '1980-05-14', 'Rua das Flores', '12', 1),
+(48, 'Bianca Bin Costa', 'CPF', '14814814848', '1990-09-19', 'Rua das Flores', '14', 1);
+
+-- 3. Inserir Moradores (96 registos para completar os 144 entre proprietários e moradores)
+-- Nota: cada proprietário terá 2 moradores vinculados (cônjuge / filhos)
+INSERT INTO moradores (proprietario_id, nome, tipo_doc, numero_doc, data_nascimento, parentesco, rua, casa, ativo) VALUES
+(1, 'Mariana Silva', 'CPF', '20120120101', '2005-03-15', 'Filho(a)', 'Rua das Flores', '10', 1),
+(1, 'Roberto Silva', 'CPF', '20120120102', '1978-11-10', 'Conjuge', 'Rua das Flores', '10', 1),
+(2, 'Paulo Souza', 'CPF', '20220220201', '1982-01-05', 'Conjuge', 'Rua das Flores', '12', 1),
+(2, 'Beatriz Souza', 'CPF', '20220220202', '2010-06-18', 'Filho(a)', 'Rua das Flores', '12', 1),
+(3, 'Carla Rocha', 'CPF', '20320320301', '1970-09-14', 'Conjuge', 'Rua das Flores', '14', 1),
+(3, 'Felipe Rocha', 'CPF', '20320320302', '2002-12-01', 'Filho(a)', 'Rua das Flores', '14', 1),
+(4, 'Gustavo Farias', 'CPF', '20420420401', '1988-05-23', 'Conjuge', 'Rua das Flores', '16', 1),
+(4, 'Helena Farias', 'CPF', '20420420402', '2015-02-11', 'Filho(a)', 'Rua das Flores', '16', 1),
+(5, 'Renata Leite', 'CPF', '20520520501', '1984-10-09', 'Conjuge', 'Rua das Flores', '18', 1),
+(5, 'Thiago Leite', 'CPF', '20520520502', '2008-04-20', 'Filho(a)', 'Rua das Flores', '18', 1),
+(6, 'Diego Silva', 'CPF', '20620620601', '1986-07-12', 'Conjuge', 'Avenida Central', '101', 1),
+(6, 'Larissa Silva', 'CPF', '20620620602', '2012-09-15', 'Filho(a)', 'Avenida Central', '101', 1),
+(7, 'Sandra Nogueira', 'CPF', '20720720701', '1981-12-04', 'Conjuge', 'Avenida Central', '102', 1),
+(7, 'Enzo Nogueira', 'CPF', '20720720702', '2006-03-29', 'Filho(a)', 'Avenida Central', '102', 1),
+(8, 'Eduardo Duarte', 'CPF', '20820820801', '1990-01-18', 'Conjuge', 'Avenida Central', '103', 1),
+(8, 'Valentina Duarte', 'CPF', '20820820802', '2018-05-07', 'Filho(a)', 'Avenida Central', '103', 1),
+(9, 'Juliana Ramos', 'CPF', '20920920901', '1986-08-22', 'Conjuge', 'Avenida Central', '104', 1),
+(9, 'Nicolas Ramos', 'CPF', '20920920902', '2011-11-03', 'Filho(a)', 'Avenida Central', '104', 1),
+(10, 'Jorge Landim', 'CPF', '21021021001', '1974-02-14', 'Conjuge', 'Avenida Central', '105', 1),
+(10, 'Bianca Landim', 'CPF', '21021021002', '2000-07-19', 'Filho(a)', 'Avenida Central', '105', 1),
+(11, 'Mônica Silva', 'CPF', '21121121101', '1988-04-16', 'Conjuge', 'Rua do Sol', '201', 1),
+(11, 'Arthur Silva', 'CPF', '21121121102', '2014-10-25', 'Filho(a)', 'Rua do Sol', '201', 1),
+(12, 'Cláudio Silveira', 'CPF', '21221221201', '1989-09-30', 'Conjuge', 'Rua do Sol', '202', 1),
+(12, 'Alice Silveira', 'CPF', '21221221202', '2016-12-02', 'Filho(a)', 'Rua do Sol', '202', 1),
+(13, 'Maria Diniz', 'CPF', '21321321301', '1962-05-11', 'Conjuge', 'Rua do Sol', '203', 1),
+(13, 'Pedro Diniz', 'CPF', '21321321302', '1995-08-14', 'Filho(a)', 'Rua do Sol', '203', 1),
+(14, 'Antônio Medeiros', 'CPF', '21421421401', '1970-11-20', 'Conjuge', 'Rua do Sol', '204', 1),
+(14, 'Júlia Medeiros', 'CPF', '21421421402', '2003-01-09', 'Filho(a)', 'Rua do Sol', '204', 1),
+(15, 'Sílvia Antunes', 'CPF', '21521521501', '1980-03-15', 'Conjuge', 'Rua do Sol', '205', 1),
+(15, 'Lucas Antunes', 'CPF', '21521521502', '2007-06-21', 'Filho(a)', 'Rua do Sol', '205', 1),
+(16, 'Mateus Pires', 'CPF', '21621621601', '1981-08-17', 'Conjuge', 'Rua das Flores', '10', 1),
+(16, 'Sophia Pires', 'CPF', '21621621602', '2013-02-28', 'Filho(a)', 'Rua das Flores', '10', 1),
+(17, 'Beatriz Borges', 'CPF', '21721721701', '1975-01-19', 'Conjuge', 'Rua das Flores', '12', 1),
+(17, 'Bernardo Borges', 'CPF', '21721721702', '2001-10-05', 'Filho(a)', 'Rua das Flores', '12', 1),
+(18, 'Carlos Rocha', 'CPF', '21821821801', '1977-06-25', 'Conjuge', 'Rua das Flores', '14', 1),
+(18, 'Manuela Rocha', 'CPF', '21821821802', '2009-11-12', 'Filho(a)', 'Rua das Flores', '14', 1),
+(19, 'Lúcia Ribeiro', 'CPF', '21921921901', '1973-04-03', 'Conjuge', 'Rua das Flores', '16', 1),
+(19, 'Davi Ribeiro', 'CPF', '21921921902', '2004-07-22', 'Filho(a)', 'Rua das Flores', '16', 1),
+(20, 'Roberto Souza', 'CPF', '22022022001', '1967-09-14', 'Conjuge', 'Rua das Flores', '18', 1),
+(20, 'Isadora Souza', 'CPF', '22022022002', '1998-03-30', 'Filho(a)', 'Rua das Flores', '18', 1),
+(21, 'Patrícia Santos', 'CPF', '22122122101', '1979-05-11', 'Conjuge', 'Avenida Central', '101', 1),
+(21, 'Vitor Santos', 'CPF', '22122122102', '2002-08-19', 'Filho(a)', 'Avenida Central', '101', 1),
+(22, 'Fernando Lima', 'CPF', '22222222201', '1968-12-01', 'Conjuge', 'Avenida Central', '102', 1),
+(22, 'Lorena Lima', 'CPF', '22222222202', '1999-04-10', 'Filho(a)', 'Avenida Central', '102', 1),
+(23, 'Helena Cavalcanti', 'CPF', '22322322301', '1965-07-20', 'Conjuge', 'Avenida Central', '103', 1),
+(23, 'Caio Cavalcanti', 'CPF', '22322322302', '1994-01-25', 'Filho(a)', 'Avenida Central', '103', 1),
+(24, 'Bruno Pires', 'CPF', '22422422401', '1987-10-08', 'Conjuge', 'Avenida Central', '104', 1),
+(24, 'Melissa Pires', 'CPF', '22422422402', '2015-09-14', 'Filho(a)', 'Avenida Central', '104', 1),
+(25, 'Renata Farias', 'CPF', '22522522501', '1974-02-27', 'Conjuge', 'Avenida Central', '105', 1),
+(25, 'Joaquim Farias', 'CPF', '22522522502', '2005-11-05', 'Filho(a)', 'Avenida Central', '105', 1),
+(26, 'Gabriel Silva', 'CPF', '22622622601', '1988-03-12', 'Conjuge', 'Rua do Sol', '201', 1),
+(26, 'Clara Silva', 'CPF', '22622622602', '2017-06-18', 'Filho(a)', 'Rua do Sol', '201', 1),
+(27, 'Juliana Ramos', 'CPF', '22722722701', '1980-07-04', 'Conjuge', 'Rua do Sol', '202', 1),
+(27, 'Noah Ramos', 'CPF', '22722722702', '2010-01-23', 'Filho(a)', 'Rua do Sol', '202', 1),
+(28, 'Marcos Medeiros', 'CPF', '22822822801', '1984-11-19', 'Conjuge', 'Rua do Sol', '203', 1),
+(28, 'Antonella Medeiros', 'CPF', '22822822802', '2014-04-09', 'Filho(a)', 'Rua do Sol', '203', 1),
+(29, 'Letícia Marques', 'CPF', '22922922901', '1983-09-02', 'Conjuge', 'Rua do Sol', '204', 1),
+(29, 'Bento Marques', 'CPF', '22922922902', '2011-08-30', 'Filho(a)', 'Rua do Sol', '204', 1),
+(30, 'Eduardo Guimarães', 'CPF', '23023023001', '1981-01-28', 'Conjuge', 'Rua do Sol', '205', 1),
+(30, 'Liz Guimarães', 'CPF', '23023023002', '2013-10-17', 'Filho(a)', 'Rua do Sol', '205', 1),
+(31, 'Tatiane Ribeiro', 'CPF', '23123123101', '1979-06-15', 'Conjuge', 'Rua das Flores', '10', 1),
+(31, 'Ravi Ribeiro', 'CPF', '23123123102', '2008-02-14', 'Filho(a)', 'Rua das Flores', '10', 1),
+(32, 'Marcelo Costa', 'CPF', '23223223201', '1981-12-09', 'Conjuge', 'Rua das Flores', '12', 1),
+(32, 'Maitê Costa', 'CPF', '23223223202', '2012-05-22', 'Filho(a)', 'Rua das Flores', '12', 1),
+(33, 'Sandra Costa', 'CPF', '23323323301', '1978-04-18', 'Conjuge', 'Rua das Flores', '14', 1),
+(33, 'Pietro Costa', 'CPF', '23323323302', '2006-09-11', 'Filho(a)', 'Rua das Flores', '14', 1),
+(34, 'Paulo Morais', 'CPF', '23423423401', '1980-08-07', 'Conjuge', 'Rua das Flores', '16', 1),
+(34, 'Emanuelly Morais', 'CPF', '23423423402', '2010-12-03', 'Filho(a)', 'Rua das Flores', '16', 1),
+(35, 'Camila Antunes', 'CPF', '23523523501', '1982-02-26', 'Conjuge', 'Rua das Flores', '18', 1),
+(35, 'Gael Antunes', 'CPF', '23523523502', '2015-07-16', 'Filho(a)', 'Rua das Flores', '18', 1),
+(36, 'Rodrigo Freitas', 'CPF', '23623623601', '1981-10-05', 'Conjuge', 'Avenida Central', '101', 1),
+(36, 'Zoe Freitas', 'CPF', '23623623602', '2016-03-09', 'Filho(a)', 'Avenida Central', '101', 1),
+(37, 'Ana Gianecchini', 'CPF', '23723723701', '1975-07-14', 'Conjuge', 'Avenida Central', '102', 1),
+(37, 'Ravi Gianecchini', 'CPF', '23723723702', '2004-11-20', 'Filho(a)', 'Avenida Central', '102', 1),
+(38, 'Carlos Prado', 'CPF', '23823823801', '1974-09-29', 'Conjuge', 'Avenida Central', '103', 1),
+(38, 'Luna Prado', 'CPF', '23823823802', '2005-02-15', 'Filho(a)', 'Avenida Central', '103', 1),
+(39, 'Cláudia Montagner', 'CPF', '23923923901', '1965-03-12', 'Conjuge', 'Avenida Central', '104', 1),
+(39, 'Otávio Montagner', 'CPF', '23923923902', '1992-06-25', 'Filho(a)', 'Avenida Central', '104', 1),
+(40, 'Marcos Vieira', 'CPF', '24024024001', '1973-12-08', 'Conjuge', 'Avenida Central', '105', 1),
+(40, 'Maya Vieira', 'CPF', '24024024002', '2003-09-04', 'Filho(a)', 'Avenida Central', '105', 1),
+(41, 'Adriana Ramos', 'CPF', '24124124101', '1980-02-19', 'Conjuge', 'Rua do Sol', '201', 1),
+(41, 'Dom Ramos', 'CPF', '24124124102', '2011-05-13', 'Filho(a)', 'Rua do Sol', '201', 1),
+(42, 'Bruno Silva', 'CPF', '24224224201', '1977-08-30', 'Conjuge', 'Rua do Sol', '202', 1),
+(42, 'Mel Silva', 'CPF', '24224224202', '2007-12-18', 'Filho(a)', 'Rua do Sol', '202', 1),
+(43, 'Maria Mendonça', 'CPF', '24324324301', '1955-04-16', 'Conjuge', 'Rua do Sol', '203', 1),
+(43, 'Antônio Mendonça', 'CPF', '24324324302', '1985-09-27', 'Filho(a)', 'Rua do Sol', '203', 1),
+(44, 'José Rocha', 'CPF', '24424424401', '1952-10-05', 'Conjuge', 'Rua do Sol', '204', 1),
+(44, 'Tereza Rocha', 'CPF', '24424424402', '1983-02-14', 'Filho(a)', 'Rua do Sol', '204', 1),
+(45, 'Juliana Paulo', 'CPF', '24524524501', '1983-06-21', 'Conjuge', 'Rua do Sol', '205', 1),
+(45, 'Bento Paulo', 'CPF', '24524524502', '2012-11-08', 'Filho(a)', 'Rua do Sol', '205', 1),
+(46, 'Marcos Lima', 'CPF', '24624624601', '1982-01-30', 'Conjuge', 'Rua das Flores', '10', 1),
+(46, 'Aurora Lima', 'CPF', '24624624602', '2014-07-04', 'Filho(a)', 'Rua das Flores', '10', 1),
+(47, 'Carla Nogueira', 'CPF', '24724724701', '1983-05-19', 'Conjuge', 'Rua das Flores', '12', 1),
+(47, 'Thales Nogueira', 'CPF', '24724724702', '2010-09-25', 'Filho(a)', 'Rua das Flores', '12', 1),
+(48, 'Diego Costa', 'CPF', '24824824801', '1988-12-11', 'Conjuge', 'Rua das Flores', '14', 1),
+(48, 'Klara Costa', 'CPF', '24824824802', '2016-01-15', 'Filho(a)', 'Rua das Flores', '14', 1);
+
+-- 4. Inserir Veículos base e associar
+INSERT INTO veiculos (id, modelo, cor, tipo_placa, placa) VALUES
+(1, 'Toyota Corolla', 'Prata', 'MERCOSUL', 'ABC1A23'),
+(2, 'Honda Civic', 'Preto', 'ANTIGA', 'XYZ-9876'),
+(3, 'Jeep Compass', 'Branco', 'MERCOSUL', 'DEF2B34'),
+(4, 'VW T-Cross', 'Cinza', 'MERCOSUL', 'GHI3C45'),
+(5, 'Hyundai Creta', 'Azul', 'ANTIGA', 'JKL-5678');
+
+INSERT INTO pessoa_veiculos (proprietario_id, veiculo_id) VALUES
+(1, 1), (2, 2), (3, 3), (4, 4), (5, 5);
+
+-- 5. Inserir Visitantes / Prestadores / Entregadores com Histórico Concluído
+INSERT INTO visitantes (id, veiculo_id, nome, tipo_doc, numero_doc, data_nascimento, frequente) VALUES
+(1, 1, 'João Entregador iFood', 'CPF', '30130130101', '1995-05-10', 1),
+(2, 2, 'Carlos Técnico Internet', 'CPF', '30230230202', '1988-08-14', 1),
+(3, NULL, 'Maria Faxineira', 'CPF', '30330330303', '1980-02-20', 1),
+(4, 3, 'Lucas Encanador', 'CPF', '30430430404', '1985-11-05', 0),
+(5, NULL, 'Ana Visita Familiar', 'RG', '901901901', '1992-04-12', 0);
+
+-- Acessos Concluídos (Histórico anterior)
+INSERT INTO registos_acesso (tipo_pessoa, visitante_id, veiculo_id, liberacao, tipo_movimento, status_visitante, rua_destino, casa_destino, observacao, data_hora_entrada, data_hora_saida) VALUES
+('VISITANTE', 1, 1, 'CANCELA_MANUAL', 'ENTRADA', 'CONCLUIDO', 'Rua das Flores', 'Proprietário: Carlos Alberto Silva (Casa 10)', 'Entrega de refeição', DATE_SUB(NOW(), INTERVAL 2 DAY), DATE_SUB(DATE_SUB(NOW(), INTERVAL 2 DAY), INTERVAL -30 MINUTE)),
+('VISITANTE', 2, 2, 'CANCELA_MANUAL', 'ENTRADA', 'CONCLUIDO', 'Avenida Central', 'Morador: Mariana Silva (Filho(a)) - Casa 101', 'Manutenção de rede', DATE_SUB(NOW(), INTERVAL 1 DAY), DATE_SUB(DATE_SUB(NOW(), INTERVAL 1 DAY), INTERVAL 2 HOUR)),
+('VISITANTE', 3, NULL, 'PORTAO_AUTOMATICO', 'ENTRADA', 'CONCLUIDO', 'Rua do Sol', 'Proprietário: Eduardo Costa e Silva (Casa 201)', 'Serviço doméstico', DATE_SUB(NOW(), INTERVAL 5 HOUR), DATE_SUB(NOW(), INTERVAL 1 HOUR));
+
+-- 6. Inserir EXATAMENTE 12 Visitantes PENDENTES (Prontos para aparecer na Home)
+INSERT INTO visitantes (id, veiculo_id, nome, tipo_doc, numero_doc, data_nascimento, frequente) VALUES
+(101, NULL, 'Pedro Entregador Mercado Livre', 'CPF', '40140140101', '1996-01-10', 0),
+(102, NULL, 'Marcos Motoboy Farmácia', 'CPF', '40240240202', '1998-05-14', 0),
+(103, NULL, 'Juliana Pintora', 'CPF', '40340340303', '1983-07-22', 0),
+(104, NULL, 'Ricardo Eletricista', 'CPF', '40440440404', '1979-03-11', '0'),
+(105, NULL, 'Camila Visita Amiga', 'RG', '501501501', '1994-09-19', 0),
+(106, NULL, 'Fernando Uber Passageiro', 'CPF', '40640640606', '1990-12-04', 0),
+(107, NULL, 'Lucas Entregador Gás', 'CPF', '40740740707', '1987-06-30', 1),
+(108, NULL, 'Gabriel Técnico Ar Condicionado', 'CPF', '40840840808', '1991-08-15', 0),
+(109, NULL, 'Larissa Manicure', 'CPF', '40940940909', '1993-02-25', 1),
+(110, NULL, 'Roberto Jardineiro', 'CPF', '41041041010', '1975-10-05', 1),
+(111, NULL, 'Tatiane Personal Trainer', 'CPF', '41141141111', '1995-11-18', 1),
+(112, NULL, 'Bruno Entregador Água', 'CPF', '41241241212', '1989-04-02', 1);
+
+INSERT INTO registos_acesso (tipo_pessoa, visitante_id, veiculo_id, liberacao, tipo_movimento, status_visitante, rua_destino, casa_destino, observacao, data_hora_entrada, data_hora_saida) VALUES
+('VISITANTE', 101, NULL, 'CANCELA_MANUAL', 'ENTRADA', 'PENDENTE', 'Rua das Flores', 'Proprietário: Carlos Alberto Silva (Casa 10)', 'Pacote e-commerce', NOW() - INTERVAL 15 MINUTE, NULL),
+('VISITANTE', 102, NULL, 'CANCELA_MANUAL', 'ENTRADA', 'PENDENTE', 'Rua das Flores', 'Morador: Mariana Silva (Filho(a)) - Casa 10', 'Remédio urgente', NOW() - INTERVAL 20 MINUTE, NULL),
+('VISITANTE', 103, NULL, 'PORTAO_AUTOMATICO', 'ENTRADA', 'PENDENTE', 'Avenida Central', 'Proprietário: Fernanda Lima e Silva (Casa 101)', 'Orçamento de pintura', NOW() - INTERVAL 25 MINUTE, NULL),
+('VISITANTE', 104, NULL, 'CANCELA_MANUAL', 'ENTRADA', 'PENDENTE', 'Avenida Central', 'Morador: Diego Silva (Conjuge) - Casa 101', 'Conserto de tomada', NOW() - INTERVAL 35 MINUTE, NULL),
+('VISITANTE', 105, NULL, 'CANCELA_MANUAL', 'ENTRADA', 'PENDENTE', 'Rua do Sol', 'Proprietário: Eduardo Costa e Silva (Casa 201)', 'Visita social', NOW() - INTERVAL 40 MINUTE, NULL),
+('VISITANTE', 106, NULL, 'PORTAO_AUTOMATICO', 'ENTRADA', 'PENDENTE', 'Rua do Sol', 'Morador: Mônica Silva (Conjuge) - Casa 201', 'Corrida de aplicativo', NOW() - INTERVAL 45 MINUTE, NULL),
+('VISITANTE', 107, NULL, 'CANCELA_MANUAL', 'ENTRADA', 'PENDENTE', 'Rua das Flores', 'Proprietário: Ana Paula Souza (Casa 12)', 'Troca de botijão', NOW() - INTERVAL 50 MINUTE, NULL),
+('VISITANTE', 108, NULL, 'CANCELA_MANUAL', 'ENTRADA', 'PENDENTE', 'Rua das Flores', 'Morador: Paulo Souza (Conjuge) - Casa 12', 'Manutenção split', NOW() - INTERVAL 55 MINUTE, NULL),
+('VISITANTE', 109, NULL, 'PORTAO_AUTOMATICO', 'ENTRADA', 'PENDENTE', 'Avenida Central', 'Proprietário: Lucas Gabriel Nogueira (Casa 102)', 'Atendimento estético', NOW() - INTERVAL 1 HOUR, NULL),
+('VISITANTE', 110, NULL, 'CANCELA_MANUAL', 'ENTRADA', 'PENDENTE', 'Avenida Central', 'Morador: Sandra Nogueira (Conjuge) - Casa 102', 'Corte de grama', NOW() - INTERVAL 1 HOUR - INTERVAL 10 MINUTE, NULL),
+('VISITANTE', 111, NULL, 'CANCELA_MANUAL', 'ENTRADA', 'PENDENTE', 'Rua do Sol', 'Proprietário: Patrícia Poeta Silveira (Casa 202)', 'Aula particular', NOW() - INTERVAL 1 HOUR - INTERVAL 20 MINUTE, NULL),
+('VISITANTE', 112, NULL, 'CANCELA_MANUAL', 'ENTRADA', 'PENDENTE', 'Rua do Sol', 'Morador: Cláudio Silveira (Conjuge) - Casa 202', 'Galão de água 20L', NOW() - INTERVAL 1 HOUR - INTERVAL 30 MINUTE, NULL);
+
+-- Reativar verificações de chave estrangeira
+SET FOREIGN_KEY_CHECKS = 1;

@@ -1,11 +1,16 @@
 <section>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
         <h2>Fluxo de Acessos Recentes</h2>
-        <div style="display: flex; gap: 0.5rem;">
-            <button onclick="UI.renderHomeCards('todos')" class="btn-action" style="background:#e2e8f0; cursor:pointer;">Todos</button>
-            <button onclick="UI.renderHomeCards('pendente')" class="btn-action" style="background:#fef3c7; color:#92400e; cursor:pointer;">Pendentes</button>
-            <button onclick="UI.renderHomeCards('concluido')" class="btn-action" style="background:#d1fae5; color:#065f46; cursor:pointer;">Concluídos</button>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button onclick="UI.renderHomeCards('todos')" class="btn-action" style="background:#e2e8f0; cursor:pointer; width: auto; padding: 0.4rem 0.8rem; font-size: 0.85rem;">Todos</button>
+            <button onclick="UI.renderHomeCards('pendente')" class="btn-action" style="background:#fef3c7; color:#92400e; cursor:pointer; width: auto; padding: 0.4rem 0.8rem; font-size: 0.85rem;">Pendentes</button>
+            <button onclick="UI.renderHomeCards('concluido')" class="btn-action" style="background:#d1fae5; color:#065f46; cursor:pointer; width: auto; padding: 0.4rem 0.8rem; font-size: 0.85rem;">Concluídos</button>
         </div>
+    </div>
+
+    <!-- Barra de Pesquisa Instantânea nos Registos -->
+    <div class="search-box" style="margin-bottom: 1.5rem;">
+        <input type="text" id="input-pesquisa-home" placeholder="Pesquisar por nome, rua, casa, placa ou liberação..." autocomplete="off">
     </div>
     
     <!-- Grelha dinâmica de cartões -->

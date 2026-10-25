@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="src/css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
     <header>
@@ -24,9 +26,11 @@
             </ul>
         </nav>
         <div class="sub-bar">
-            <span>Cancela Manual: <a onclick="UI.filtrarAcessos('CANCELA_MANUAL', 'pendente')">Pendentes</a> | <a onclick="UI.filtrarAcessos('CANCELA_MANUAL', 'concluido')">Concluídos</a></span>
+            <span>Cancela Manual: <a onclick="UI.filtrarAcessos('CANCELA_MANUAL', 'pendente')">Pendentes</a> | <a
+                    onclick="UI.filtrarAcessos('CANCELA_MANUAL', 'concluido')">Concluídos</a></span>
             <span>|</span>
-            <span>Portão Automático: <a onclick="UI.filtrarAcessos('PORTAO_AUTOMATICO', 'pendente')">Pendentes</a> | <a onclick="UI.filtrarAcessos('PORTAO_AUTOMATICO', 'concluido')">Concluídos</a></span>
+            <span>Portão Automático: <a onclick="UI.filtrarAcessos('PORTAO_AUTOMATICO', 'pendente')">Pendentes</a> | <a
+                    onclick="UI.filtrarAcessos('PORTAO_AUTOMATICO', 'concluido')">Concluídos</a></span>
         </div>
     </header>
 
@@ -34,9 +38,28 @@
         <!-- Conteúdo SPA -->
     </main>
 
+    <!-- Modal de Timeline / Histórico -->
+    <div id="modal-timeline"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div
+            style="background: var(--bg-card, #ffffff); width: 90%; max-width: 600px; max-height: 85vh; border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border, #e2e8f0); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                <h3 id="modal-timeline-titulo" style="margin: 0; color: var(--primary, #2563eb);">Histórico de Acessos
+                </h3>
+                <button onclick="UI.fecharModalTimeline()"
+                    style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-secondary, #64748b);">✕</button>
+            </div>
+            <div id="modal-timeline-conteudo" style="overflow-y: auto; flex: 1; padding-right: 0.5rem;">
+                <!-- O conteúdo da timeline será injetado aqui via JavaScript -->
+            </div>
+        </div>
+    </div>
+
     <script src="src/scripts/validation.js"></script>
     <script src="src/scripts/db.js"></script>
     <script src="src/scripts/ui.js"></script>
     <script src="src/scripts/app.js"></script>
 </body>
+
 </html>

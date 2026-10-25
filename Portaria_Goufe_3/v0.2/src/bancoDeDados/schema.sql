@@ -8,16 +8,17 @@ CREATE TABLE ruas (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de Casas/Lotes
+-- Tabela de Casas/Lotes (Garante que o número da casa seja único dentro da mesma rua)
 CREATE TABLE casas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     rua_id INT NOT NULL,
-    numero_casa VARCHAR(20) NOT NULL UNIQUE,
+    numero_casa VARCHAR(20) NOT NULL,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (rua_id) REFERENCES ruas(id) ON DELETE CASCADE
+    FOREIGN KEY (rua_id) REFERENCES ruas(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_casa_por_rua (rua_id, numero_casa)
 );
 
--- Tabela de Configuração do Condomínio (Mapa)
+-- Tabela de Configuração do Condomínio (Mapa e Dados Globais)
 CREATE TABLE condominio_config (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome_condominio VARCHAR(150) DEFAULT 'Condomínio Principal',
@@ -35,20 +36,21 @@ CREATE TABLE veiculos (
     INDEX idx_placa (placa)
 );
 
--- Tabela de Proprietários
+-- Tabela de Proprietários (Normalizada com relação direta à tabela casas)
 CREATE TABLE proprietarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     tipo_doc ENUM('CPF', 'RG') NOT NULL,
     numero_doc VARCHAR(20) NOT NULL UNIQUE,
     data_nascimento DATE NOT NULL,
-    rua VARCHAR(100) NOT NULL,
-    casa VARCHAR(20) NOT NULL,
+    casa_id INT NOT NULL,
     ativo BOOLEAN DEFAULT TRUE,
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (casa_id) REFERENCES casas(id) ON DELETE RESTRICT,
+    INDEX idx_proprietario_casa (casa_id)
 );
 
--- Tabela de Moradores / Inquilinos (Atualizada com a coluna parentesco)
+-- Tabela de Moradores / Inquilinos (Normalizada com relação direta à tabela casas)
 CREATE TABLE moradores (
     id INT AUTO_INCREMENT PRIMARY KEY,
     proprietario_id INT NULL, 
@@ -57,11 +59,12 @@ CREATE TABLE moradores (
     numero_doc VARCHAR(20) NOT NULL UNIQUE,
     data_nascimento DATE NOT NULL,
     parentesco VARCHAR(50) DEFAULT 'Titular',
-    rua VARCHAR(100) NOT NULL,
-    casa VARCHAR(20) NOT NULL,
+    casa_id INT NOT NULL,
     ativo BOOLEAN DEFAULT TRUE,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (proprietario_id) REFERENCES proprietarios(id) ON DELETE SET NULL
+    FOREIGN KEY (proprietario_id) REFERENCES proprietarios(id) ON DELETE SET NULL,
+    FOREIGN KEY (casa_id) REFERENCES casas(id) ON DELETE RESTRICT,
+    INDEX idx_morador_casa (casa_id)
 );
 
 -- Tabela Associativa de Veículos para Proprietários e Moradores
@@ -89,10 +92,12 @@ CREATE TABLE visitantes (
     INDEX idx_doc (numero_doc)
 );
 
--- Tabela de Registos de Acesso (Movimentação)
+-- Tabela de Registos de Acesso (Com rastreabilidade completa para Proprietários, Moradores e Visitantes)
 CREATE TABLE registos_acesso (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tipo_pessoa ENUM('PROPRIETARIO', 'MORADOR', 'VISITANTE') NOT NULL,
+    proprietario_id INT NULL,
+    morador_id INT NULL,
     visitante_id INT NULL,
     veiculo_id INT NULL,
     porteiro_nome VARCHAR(100) DEFAULT 'Celso Padilha',
@@ -104,6 +109,8 @@ CREATE TABLE registos_acesso (
     observacao TEXT,
     data_hora_entrada DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     data_hora_saida DATETIME NULL,
+    FOREIGN KEY (proprietario_id) REFERENCES proprietarios(id) ON DELETE SET NULL,
+    FOREIGN KEY (morador_id) REFERENCES moradores(id) ON DELETE SET NULL,
     FOREIGN KEY (visitante_id) REFERENCES visitantes(id) ON DELETE SET NULL,
     FOREIGN KEY (veiculo_id) REFERENCES veiculos(id) ON DELETE SET NULL,
     INDEX idx_data_entrada (data_hora_entrada),

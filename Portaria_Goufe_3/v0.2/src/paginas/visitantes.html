@@ -9,61 +9,70 @@
             <fieldset>
                 <legend>Registo de Visitantes</legend>
                 
-                <h4 style="margin: 0.5rem 0 0.75rem 0; color: var(--accent);">Identificação do Veículo</h4>
-                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem; background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px dashed var(--border);">
+                <h4 style="margin: 0.5rem 0 0.75rem 0; color: var(--primary);">Identificação do Veículo</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.5rem; margin-bottom: 1.5rem; background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px dashed var(--border);">
                     <div>
                         <label style="font-size: 0.85rem;">Tipo Placa:</label>
-                        <select id="v_tipo_placa">
+                        <select id="v_tipo_placa" style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid var(--border);">
                             <option value="ANTIGA">Antiga (ABC-1234)</option>
                             <option value="MERCOSUL">Mercosul (ABC1A23)</option>
                         </select>
                     </div>
                     <div>
-                        <label style="font-size: 0.85rem;">Placa do Veículo:</label>
-                        <input type="text" id="v_placa" placeholder="Digite a placa..." oninput="Validation.aplicarMascaraPlaca(this); UI.buscarAutoPreenchimentoPlaca(this.value)" autocomplete="off">
+                        <label style="font-size: 0.85rem;">Placa:</label>
+                        <input type="text" id="v_placa" placeholder="Placa..." oninput="Validation.aplicarMascaraPlaca(this); UI.buscarAutoPreenchimentoPlaca(this.value)" autocomplete="off" style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid var(--border);">
                     </div>
                     <div>
                         <label style="font-size: 0.85rem;">Modelo:</label>
-                        <input type="text" id="v_modelo" placeholder="Ex: Gol" autocomplete="off">
+                        <input type="text" id="v_modelo" placeholder="Ex: Gol" autocomplete="off" style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid var(--border);">
                     </div>
                     <div>
                         <label style="font-size: 0.85rem;">Cor:</label>
-                        <input type="text" id="v_cor" placeholder="Ex: Prata" autocomplete="off">
+                        <input type="text" id="v_cor" placeholder="Ex: Prata" autocomplete="off" style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid var(--border);">
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 1rem;">
                     <label>Data e Hora de Entrada:</label>
-                    <input type="datetime-local" id="v_data_hora" required autocomplete="off">
+                    <input type="datetime-local" id="v_data_hora" required autocomplete="off" style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid var(--border);">
                 </div>
-                <div class="form-group">
-                    <label>Destino (Proprietário ou Morador):</label>
-                    <select id="select-destino-morador" required>
-                        <option value="">A carregar destinos...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Nome do Visitante:</label>
-                    <input type="text" id="v_nome" required placeholder="Ex: Carlos Silva" autocomplete="off">
-                </div>
-                <div class="form-group">
-                    <label>Documento:</label>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <select id="v_tipo_doc" style="width: 120px;"><option value="CPF">CPF</option><option value="RG">RG</option></select>
-                        <input type="text" id="v_numero_doc" style="flex:1;" required placeholder="000.000.000-00" autocomplete="off">
+
+                <!-- Campo de Destino com Autocomplete (Substitui o Select Gigante) -->
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label>Destino (Digite o nome do Morador ou Casa):</label>
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="v_destino_input" placeholder="Ex: Carlos / Casa 10 / Rua das Flores..." autocomplete="off" style="width:100%; padding:0.75rem; border-radius:6px; border:1px solid var(--border);">
+                        <input type="hidden" id="select-destino-morador" required>
+                        <div id="v_destino_results" class="autocomplete-results"></div>
                     </div>
                 </div>
-                <div class="form-group">
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label>Nome do Visitante:</label>
+                    <input type="text" id="v_nome" required placeholder="Ex: Carlos Silva" autocomplete="off" style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid var(--border);">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label>Documento:</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <select id="v_tipo_doc" style="width: 100px; padding:0.5rem; border-radius:6px; border:1px solid var(--border);"><option value="CPF">CPF</option><option value="RG">RG</option></select>
+                        <input type="text" id="v_numero_doc" style="flex:1; padding:0.5rem; border-radius:6px; border:1px solid var(--border);" required placeholder="000.000.000-00" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
                     <label>Data de Nascimento:</label>
-                    <input type="date" id="v_data_nascimento" autocomplete="off">
+                    <input type="date" id="v_data_nascimento" autocomplete="off" style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid var(--border);">
                 </div>
-                <div class="form-group" style="margin-top: 1rem;">
+
+                <div class="form-group" style="margin-bottom: 1rem;">
                     <label>Observação:</label>
-                    <textarea id="v_observacao" rows="2" placeholder="Ex: Vai visitar o pai / Entregador..." autocomplete="off"></textarea>
+                    <textarea id="v_observacao" rows="2" placeholder="Ex: Visita social / Entregador..." autocomplete="off" style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid var(--border);"></textarea>
                 </div>
-                <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
-                    <button type="submit" class="btn-action btn-primary">Salvar como Acesso (Entrada)</button>
-                    <button type="button" onclick="UI.salvarVisitante(event, true)" class="btn-action" style="background:var(--success); color:white;">Salvar como Frequente</button>
+
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button type="submit" class="btn-action btn-primary" style="flex: 1;">Salvar como Acesso (Entrada)</button>
+                    <button type="button" onclick="UI.salvarVisitante(event, true)" class="btn-action" style="background:var(--success); color:white; flex: 1;">Salvar como Frequente</button>
                 </div>
             </fieldset>
         </form>
