@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estacionamento - BETA v0.3</title>
+</head>
+<body>
+    <header>
+        <button onclick="mudarDeTela('cadastrar')">Cadastrar</button>
+        <button onclick="mudarDeTela('visualizar')">Visualizar</button>
+    </header>
+
+    <main>
+        <!-- TELA 1: Cadastro -->
+        <section id="tela-cadastrar" class="tela">
+            <form id="formCadastro" autocomplete="off">
+                <input type="text" id="nomeDoMotorista" placeholder="Nome do Motorista">
+                <input type="text" id="v_placa" placeholder="Placa">
+                <input type="text" id="v_modelo" placeholder="Modelo">
+                <input type="text" id="v_cor" placeholder="Cor">
+                <button type="submit">Salvar</button>
+            </form>
+        </section>
+
+        <!-- TELA 2: Visualização -->
+        <section id="tela-visualizar" class="tela" style="display: none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Motorista</th>
+                        <th>Placa</th>
+                        <th>Modelo</th>
+                        <th>Cor</th>
+                        <th>Data - Hora</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="listaDeVeiculos">
+                    <!-- Cadastrados Aparecerá Aqui -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
